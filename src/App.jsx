@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { LockContext } from './context'
 import { EMPTY, load, save } from './storage'
 import { MISSIONS, todayKey } from './engine'
@@ -21,6 +21,7 @@ export default function App() {
   const [picked, setPicked] = useState('stack')
   const [tab, setTab] = useState('today')
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const stageRef = useRef(null)
 
   const update = useCallback((fn) => {
     setState((prev) => fn(prev))
@@ -29,6 +30,10 @@ export default function App() {
   useEffect(() => {
     save(state)
   }, [state])
+
+  useEffect(() => {
+    stageRef.current?.scrollTo(0, 0)
+  }, [tab])
 
   useEffect(() => {
     const mission = state.profile?.mission || picked || 'stack'
@@ -130,7 +135,7 @@ export default function App() {
             <p>Saved on this device</p>
           </div>
         </header>
-        <main id="main" className="stage">
+        <main id="main" className="stage" ref={stageRef}>
           {tab === 'today' && <Today />}
           {tab === 'iron' && <Lift />}
           {tab === 'fuel' && <Fuel />}
